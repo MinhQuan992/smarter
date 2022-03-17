@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'sign_up.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -43,7 +44,7 @@ class _SignInState extends State<SignIn> {
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Align(
-                            alignment: Alignment.topLeft,
+                            alignment: Alignment.topCenter,
                             child: Text(
                               "Đăng nhập",
                               style:
@@ -54,7 +55,7 @@ class _SignInState extends State<SignIn> {
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 5),
                           child: Align(
-                            alignment: Alignment.topLeft,
+                            alignment: Alignment.topCenter,
                             child: Text(
                               "Chào mừng bạn trở lại với Smarter!",
                               style:
@@ -138,8 +139,7 @@ class _SignInState extends State<SignIn> {
                           child: ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 15, horizontal: 122)),
+                                fixedSize: const Size(330, 50)),
                             child: const Text(
                               "Đăng nhập",
                               style: TextStyle(
@@ -153,22 +153,30 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
                   Row(
-                    children: const <Widget>[
-                      Text(
+                    children: <Widget>[
+                      const Text(
                         "Quên mật khẩu?",
                         style: TextStyle(
                             color: Colors.grey,
                             fontSize: 18,
                             fontWeight: FontWeight.bold),
                       ),
-                      Align(
-                          alignment: Alignment.topRight,
-                          child: Text(
-                            "Đăng ký",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(133, 0, 0, 0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const SignUp()));
+                            },
+                            child: const Text(
+                              "Đăng ký",
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ))
                     ],
                   )
