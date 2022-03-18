@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smarter/screens/home/home.dart';
 import 'sign_up.dart';
 
 class SignIn extends StatefulWidget {
@@ -137,7 +138,12 @@ class _SignInState extends State<SignIn> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Home()));
+                            },
                             style: ElevatedButton.styleFrom(
                                 fixedSize: const Size(330, 50)),
                             child: const Text(
