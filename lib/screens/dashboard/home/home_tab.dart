@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smarter/screens/dashboard/home/question_group.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({Key? key}) : super(key: key);
@@ -8,9 +9,7 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  final ScrollController _controller = ScrollController();
-
-  List questionGroups = [
+  List groupNames = [
     'VĂN HÓA',
     'SỨC KHỎE',
     'LỊCH SỬ',
@@ -58,7 +57,7 @@ class _HomeTabState extends State<HomeTab> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.symmetric(vertical: 13),
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(fixedSize: const Size(300, 50)),
@@ -73,63 +72,25 @@ class _HomeTabState extends State<HomeTab> {
             ),
           ]),
         ),
-        Column(children: <Widget>[
-          Row(
+        Expanded(
+          child: GridView.count(
+            childAspectRatio: 1.75,
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            padding: const EdgeInsets.all(10),
+            shrinkWrap: true,
             children: <Widget>[
-              createQuestionGroup('VĂN HÓA', 'culture.jpg', 1),
-              createQuestionGroup('SỨC KHỎE', 'health.jpg', 2),
+              QuestionGroup(groupNames[0], imageNames[0]),
+              QuestionGroup(groupNames[1], imageNames[1]),
+              QuestionGroup(groupNames[2], imageNames[2]),
+              QuestionGroup(groupNames[3], imageNames[3]),
+              QuestionGroup(groupNames[4], imageNames[4]),
+              QuestionGroup(groupNames[5], imageNames[5]),
             ],
-          ),
-          Row(
-            children: <Widget>[
-              createQuestionGroup('LỊCH SỬ', 'history.jpg', 1),
-              createQuestionGroup('TỰ NHIÊN', 'nature.jpg', 2),
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              createQuestionGroup('THỂ THAO', 'sport.jpg', 1),
-              createQuestionGroup('CÔNG NGHỆ', 'technology.jpg', 2),
-            ],
-          )
-        ])
-      ],
-    );
-  }
-
-  Widget createQuestionGroup(
-      String groupName, String imageName, int orderOnRow) {
-    EdgeInsets edgeInsets;
-    if (orderOnRow == 1) {
-      edgeInsets = const EdgeInsets.fromLTRB(12, 12, 0, 0);
-    } else {
-      edgeInsets = const EdgeInsets.fromLTRB(9, 12, 0, 0);
-    }
-
-    return Padding(
-      padding: edgeInsets,
-      child: FractionalTranslation(
-        translation: const Offset(0, 0),
-        child: Container(
-          width: 190,
-          height: 110,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/question_group/$imageName'),
-                  fit: BoxFit.cover),
-              borderRadius: BorderRadius.circular(10)),
-          child: Center(
-            child: Text(
-              groupName,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

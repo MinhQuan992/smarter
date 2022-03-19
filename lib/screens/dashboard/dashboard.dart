@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:smarter/screens/home/tab/home_tab.dart';
+import 'package:smarter/screens/dashboard/home/home_tab.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class DashBoard extends StatefulWidget {
+  const DashBoard({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<DashBoard> createState() => _DashBoardState();
 }
 
-class _HomeState extends State<Home> {
+class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
