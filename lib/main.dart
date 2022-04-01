@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smarter/screens/authentication/sign_in.dart';
+import 'package:smarter/screens/authentication/sign_in/sign_in.dart';
 
 void main() {
   runApp(const MyApp());
