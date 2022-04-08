@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smarter/screens/authentication/sign_in/sign_in_form.dart';
 import 'package:smarter/screens/authentication/sign_up/sign_up.dart';
 
-class SignIn extends StatefulWidget {
+class SignIn extends StatelessWidget {
   const SignIn({Key? key}) : super(key: key);
-
-  @override
-  State<SignIn> createState() => _SignInState();
-}
-
-class _SignInState extends State<SignIn> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +19,15 @@ class _SignInState extends State<SignIn> {
                   const SignInForm(),
                   Row(
                     children: <Widget>[
-                      const Text(
-                        "Quên mật khẩu?",
-                        style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
+                      GestureDetector(
+                        onTap: () {},
+                        child: const Text(
+                          "Quên mật khẩu?",
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                       Padding(
                           padding: const EdgeInsets.fromLTRB(133, 0, 0, 0),

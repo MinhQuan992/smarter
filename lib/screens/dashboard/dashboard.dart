@@ -1,31 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:smarter/screens/dashboard/home/home_tab.dart';
 
-class DashBoard extends StatefulWidget {
+class DashBoard extends StatelessWidget {
   const DashBoard({Key? key}) : super(key: key);
 
-  @override
-  State<DashBoard> createState() => _DashBoardState();
-}
-
-class _DashBoardState extends State<DashBoard> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
           length: 3,
           child: Scaffold(
-            bottomNavigationBar: createMenu(),
-            body: const TabBarView(children: [
+            bottomNavigationBar: _createMenu(),
+            body: TabBarView(children: [
               HomeTab(),
-              Icon(Icons.save),
-              Icon(Icons.account_box)
+              const Icon(Icons.save),
+              const Icon(Icons.account_box)
             ]),
           )),
     );
   }
 
-  Widget createMenu() {
+  Widget _createMenu() {
     return Container(
         color: Colors.blue,
         child: const TabBar(

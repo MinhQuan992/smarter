@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:smarter/screens/dashboard/home/question_group.dart';
 
-class HomeTab extends StatefulWidget {
-  const HomeTab({Key? key}) : super(key: key);
+class HomeTab extends StatelessWidget {
+  HomeTab({Key? key}) : super(key: key);
 
-  @override
-  State<HomeTab> createState() => _HomeTabState();
-}
-
-class _HomeTabState extends State<HomeTab> {
-  List groupNames = [
+  final List _groupNames = [
     'VĂN HÓA',
     'SỨC KHỎE',
     'LỊCH SỬ',
@@ -17,7 +12,7 @@ class _HomeTabState extends State<HomeTab> {
     'THỂ THAO',
     'CÔNG NGHỆ'
   ];
-  List imageNames = [
+  final List _imageNames = [
     'culture.jpg',
     'health.jpg',
     'history.jpg',
@@ -81,12 +76,12 @@ class _HomeTabState extends State<HomeTab> {
             padding: const EdgeInsets.all(10),
             shrinkWrap: true,
             children: <Widget>[
-              QuestionGroup(groupNames[0], imageNames[0]),
-              QuestionGroup(groupNames[1], imageNames[1]),
-              QuestionGroup(groupNames[2], imageNames[2]),
-              QuestionGroup(groupNames[3], imageNames[3]),
-              QuestionGroup(groupNames[4], imageNames[4]),
-              QuestionGroup(groupNames[5], imageNames[5]),
+              QuestionGroup(_groupNames[0], _imageNames[0]),
+              QuestionGroup(_groupNames[1], _imageNames[1]),
+              QuestionGroup(_groupNames[2], _imageNames[2]),
+              QuestionGroup(_groupNames[3], _imageNames[3]),
+              QuestionGroup(_groupNames[4], _imageNames[4]),
+              QuestionGroup(_groupNames[5], _imageNames[5]),
             ],
           ),
         ),

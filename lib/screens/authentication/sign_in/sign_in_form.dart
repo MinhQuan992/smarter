@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smarter/models/authentication/authentication_request.dart';
 import 'package:smarter/screens/dashboard/dashboard.dart';
 import 'package:smarter/services/authentication_service.dart';
+import 'package:smarter/utils/toast_builder.dart';
 
 class SignInForm extends StatefulWidget {
   const SignInForm({Key? key}) : super(key: key);
@@ -13,9 +13,10 @@ class SignInForm extends StatefulWidget {
 }
 
 class _SignInFormState extends State<SignInForm> {
-  bool hidePassword = true;
-  GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
-  FlutterSecureStorage storage = const FlutterSecureStorage();
+  bool _hidePassword = true;
+  final GlobalKey<FormState> _globalFormKey = GlobalKey<FormState>();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final ToastBuilder _toastBuilder = const ToastBuilder();
 
   late String _email, _password;
 
@@ -27,7 +28,7 @@ class _SignInFormState extends State<SignInForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: globalFormKey,
+      key: _globalFormKey,
       child: Column(
         children: <Widget>[
           const Align(
@@ -62,25 +63,11 @@ class _SignInFormState extends State<SignInForm> {
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: TextFormField(
               keyboardType: TextInputType.emailAddress,
-              validator: (input) =>
-                  input == null || input.isEmpty ? "Mời bạn nhập email!" : null,
-              onSaved: (input) => _email = input!,
-              decoration: InputDecoration(
-                hintText: "Email của bạn",
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary
-                            .withOpacity(0.2))),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary)),
-                prefixIcon: Icon(
-                  Icons.email,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
+              validator: (input) => input!.isEmpty || input.trim().isEmpty
+                  ? "Mời bạn nhập email"
+                  : null,
+              onSaved: (input) => _email = input!.trim(),
+              decoration: _buildDecoration("Email của bạn", Icons.email, false),
             ),
           ),
           Padding(
@@ -88,38 +75,11 @@ class _SignInFormState extends State<SignInForm> {
             child: TextFormField(
               style: TextStyle(color: Theme.of(context).colorScheme.secondary),
               keyboardType: TextInputType.text,
-              validator: (input) => input == null || input.isEmpty
-                  ? "Mời bạn nhập mật khẩu!"
-                  : null,
+              validator: (input) =>
+                  input!.isEmpty ? "Mời bạn nhập mật khẩu" : null,
               onSaved: (input) => _password = input!,
-              obscureText: hidePassword,
-              decoration: InputDecoration(
-                hintText: "Mật khẩu",
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .secondary
-                            .withOpacity(0.2))),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.secondary)),
-                prefixIcon: Icon(
-                  Icons.lock,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      hidePassword = !hidePassword;
-                    });
-                  },
-                  color:
-                      Theme.of(context).colorScheme.secondary.withOpacity(0.4),
-                  icon: Icon(
-                      hidePassword ? Icons.visibility_off : Icons.visibility),
-                ),
-              ),
+              obscureText: _hidePassword,
+              decoration: _buildDecoration("Mật khẩu", Icons.lock, true),
             ),
           ),
           Padding(
@@ -143,8 +103,38 @@ class _SignInFormState extends State<SignInForm> {
     );
   }
 
+  InputDecoration _buildDecoration(
+      String hintText, IconData prefixIcon, bool forPasswordField) {
+    return InputDecoration(
+        hintText: hintText,
+        counterText: "",
+        enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+                color:
+                    Theme.of(context).colorScheme.secondary.withOpacity(0.2))),
+        focusedBorder: UnderlineInputBorder(
+            borderSide:
+                BorderSide(color: Theme.of(context).colorScheme.secondary)),
+        prefixIcon: Icon(
+          prefixIcon,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        suffixIcon: forPasswordField
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    _hidePassword = !_hidePassword;
+                  });
+                },
+                color: Theme.of(context).colorScheme.secondary.withOpacity(0.4),
+                icon: Icon(
+                    _hidePassword ? Icons.visibility_off : Icons.visibility),
+              )
+            : null);
+  }
+
   bool _validateAndSave() {
-    final form = globalFormKey.currentState;
+    final form = _globalFormKey.currentState;
     if (form!.validate()) {
       form.save();
       return true;
@@ -163,7 +153,7 @@ class _SignInFormState extends State<SignInForm> {
           .then((value) async => {
                 if (value.token != "")
                   {
-                    await storage.write(key: "token", value: value.token),
+                    await _storage.write(key: "token", value: value.token),
                     debugPrint(value.token),
                     Navigator.push(
                         context,
@@ -171,16 +161,7 @@ class _SignInFormState extends State<SignInForm> {
                             builder: (context) => const DashBoard()))
                   }
                 else
-                  {
-                    Fluttertoast.showToast(
-                        msg: "Email hoặc mật khẩu sai. Mời bạn thử lại!",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.black87,
-                        textColor: Colors.white,
-                        fontSize: 13.0)
-                  }
+                  {_toastBuilder.build("Email hoặc mật khẩu sai")}
               });
     }
   }
