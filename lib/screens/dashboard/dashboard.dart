@@ -11,10 +11,10 @@ class DashBoard extends StatelessWidget {
           length: 3,
           child: Scaffold(
             bottomNavigationBar: _createMenu(),
-            body: TabBarView(children: [
+            body: const TabBarView(children: [
               HomeTab(),
-              const Icon(Icons.save),
-              const Icon(Icons.account_box)
+              Icon(Icons.save),
+              Icon(Icons.account_box)
             ]),
           )),
     );
