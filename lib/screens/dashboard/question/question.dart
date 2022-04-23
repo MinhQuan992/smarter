@@ -2,35 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:smarter/models/question/question_response.dart';
 import 'package:smarter/services/question_service.dart';
 
-class RandomQuestion extends StatefulWidget {
-  final Future<QuestionResponse> getNextQuestion;
-  const RandomQuestion({Key? key, required this.getNextQuestion})
+class Question extends StatefulWidget {
+  final Future<QuestionResponse> Function() getNextQuestion;
+  const Question({Key? key, required this.getNextQuestion})
       : super(key: key);
 
   @override
-  State<RandomQuestion> createState() => _RandomQuestionState();
+  State<Question> createState() => _QuestionState();
 }
 
-class _RandomQuestionState extends State<RandomQuestion> {
+class _QuestionState extends State<Question> {
   final QuestionService _questionService = const QuestionService();
-  bool _hasAnswered = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  bool _wasInit = false;
+  bool _hasAnswered = false;
+  String _chosenAnswer = "";
+  int _numberOfRebuildAttempts = 0;
+  QuestionResponse? _response;
+  Future<QuestionResponse>? _getNextQuestion;
 
   @override
   Widget build(BuildContext context) {
+    if (_wasInit == false) {
+      _getNextQuestion = widget.getNextQuestion();
+      _wasInit = true;
+    }
+
     return Scaffold(
       body: FutureBuilder<QuestionResponse>(
-        future: widget.getNextQuestion,
+        future: _getNextQuestion,
         builder: (context, snapshot) => !snapshot.hasData
             ? const Center(
                 child: CircularProgressIndicator(),
               )
             : Builder(builder: (context) {
-                final question = snapshot.data;
+                final question = _response ?? snapshot.data;
                 return Column(
                   children: [
                     Expanded(
@@ -81,12 +87,10 @@ class _RandomQuestionState extends State<RandomQuestion> {
           ),
           Column(
             children: [
-              _buildAnswer(question.answerA, "A", question.id),
-              _buildAnswer(question.answerB, "B", question.id),
-              if (question.answerC != "")
-                _buildAnswer(question.answerC!, "C", question.id),
-              if (question.answerD != "")
-                _buildAnswer(question.answerD!, "D", question.id)
+              _buildAnswer(question, "A"),
+              _buildAnswer(question, "B"),
+              if (question.answerC != "") _buildAnswer(question, "C"),
+              if (question.answerD != "") _buildAnswer(question, "D")
             ],
           ),
         ],
@@ -94,14 +98,12 @@ class _RandomQuestionState extends State<RandomQuestion> {
     );
   }
 
-  Widget _buildAnswer(String answerContent, String answerCode, int questionId) {
-    bool isCorrect = false;
-    bool isChosen = false;
+  Widget _buildAnswer(QuestionResponse question, String answerCode) {
     return InkWell(
-      onTap: () {
-        isCorrect = _isAnswerCorrect(answerCode, questionId);
-        isChosen = true;
+      onTap: () async {
+        await _questionService.checkAnswer(question.id, answerCode);
         setState(() {
+          _chosenAnswer = answerCode;
           _hasAnswered = true;
         });
       },
@@ -111,13 +113,11 @@ class _RandomQuestionState extends State<RandomQuestion> {
           width: 380,
           decoration: BoxDecoration(
               color: _hasAnswered
-                  ? isCorrect
-                      ? Colors.green
-                      : Colors.red
+                  ? _getColor(question, answerCode, _chosenAnswer)
                   : Colors.grey.shade400,
               borderRadius: BorderRadius.circular(10)),
           child: Text(
-            answerContent,
+            _getAnswerContent(question, answerCode),
             style: const TextStyle(color: Colors.black, fontSize: 18),
           )),
     );
@@ -153,9 +153,10 @@ class _RandomQuestionState extends State<RandomQuestion> {
         const Spacer(),
         ElevatedButton.icon(
           icon: const Icon(Icons.arrow_right_sharp),
-          onPressed: () {
-            print("A");
-            setState(() {});
+          onPressed: () async {
+            _numberOfRebuildAttempts += 1;
+            _hasAnswered = false;
+            await getNextQuestion();
           },
           style: ElevatedButton.styleFrom(fixedSize: const Size(100, 40)),
           label: const Text("Tiếp theo",
@@ -166,11 +167,33 @@ class _RandomQuestionState extends State<RandomQuestion> {
     );
   }
 
-  bool _isAnswerCorrect(String answerCode, int questionId) {
-    bool result = false;
-    _questionService.checkAnswer(questionId, answerCode).then((value) => {
-          if (value.answerCorrect) {result = true}
-        });
-    return result;
+  Color _getColor(QuestionResponse question, String answerCode, String chosenAnswer) {
+    if (question.correctAnswer.substring(7) == answerCode) {
+      return Colors.green;
+    }
+    if (chosenAnswer == answerCode) {
+      return Colors.red;
+    }
+    return Colors.grey.shade400;
+  }
+
+  String _getAnswerContent(QuestionResponse question, String answerCode) {
+    if (answerCode == "A") {
+      return question.answerA;
+    }
+    if (answerCode == "B") {
+      return question.answerB;
+    }
+    if (answerCode == "C") {
+      return question.answerC!;
+    }
+    return question.answerD!;
+  }
+
+  Future<void> getNextQuestion() async {
+    final response = await widget.getNextQuestion();
+    setState(() {
+      _response = response;
+    });
   }
 }

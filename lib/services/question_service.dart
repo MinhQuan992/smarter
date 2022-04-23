@@ -26,8 +26,12 @@ class QuestionService {
     String? token = await _flutterSecureStorage.read(key: "token");
     final response = await http.post(
         Uri.parse("${constants.baseUrl}/questions/check-answer/$questionId"),
-        headers: {"Authorization": "Bearer $token"},
-        body: {"chosenAnswer": answerCode});
-    return CheckAnswerResponse.fromJson(jsonDecode(response.body));
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: json.encode({"chosenAnswer": answerCode}));
+    return CheckAnswerResponse.fromJson(
+        jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
   }
 }

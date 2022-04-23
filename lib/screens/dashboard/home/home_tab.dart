@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smarter/models/user/user_response.dart';
-import 'package:smarter/screens/dashboard/question/random_question.dart';
+import 'package:smarter/screens/dashboard/question/question.dart';
 import 'package:smarter/screens/dashboard/home/question_group.dart';
 import 'package:smarter/services/question_service.dart';
 import 'package:smarter/services/user_service.dart';
@@ -86,9 +86,9 @@ class _HomeTabState extends State<HomeTab> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RandomQuestion(
-                                        getNextQuestion: _questionService
-                                            .getRandomQuestion(),
+                                  builder: (context) => Question(
+                                        getNextQuestion:
+                                            _questionService.getRandomQuestion,
                                       )));
                         },
                         style: ElevatedButton.styleFrom(
