@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:smarter/models/exception.dart';
 import 'package:smarter/models/user/user_response.dart';
 import 'package:smarter/models/user/add_user_request.dart';
@@ -9,6 +10,9 @@ import '../common/constants.dart' as constants;
 
 class UserService {
   const UserService();
+
+  final FlutterSecureStorage _flutterSecureStorage =
+      const FlutterSecureStorage();
 
   Future<dynamic> verifyInfoAndGenerateOtp(VerifyInfoRequest request) async {
     final response = await http.post(
@@ -32,6 +36,15 @@ class UserService {
           jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
     }
     return Exception.fromJson(
+        jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
+  }
+
+  Future<UserResponse> getCurrentUser() async {
+    String? token = await _flutterSecureStorage.read(key: "token");
+    final response = await http.get(
+        Uri.parse("${constants.baseUrl}/users/current-user"),
+        headers: {"Authorization": "Bearer $token"});
+    return UserResponse.fromJson(
         jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
   }
 }
