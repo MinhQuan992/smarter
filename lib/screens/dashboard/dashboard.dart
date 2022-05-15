@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smarter/screens/dashboard/home/home_tab.dart';
+import 'package:smarter/screens/dashboard/question_list/question_list.dart';
 
 class DashBoard extends StatelessWidget {
   const DashBoard({Key? key}) : super(key: key);
@@ -8,12 +9,13 @@ class DashBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
-          length: 3,
+          length: 4,
           child: Scaffold(
             bottomNavigationBar: _createMenu(),
             body: const TabBarView(children: [
               HomeTab(),
-              Icon(Icons.save),
+              QuestionList(title: "Câu hỏi yêu thích"),
+              Icon(Icons.list_alt_sharp),
               Icon(Icons.account_box)
             ]),
           )),
@@ -30,15 +32,15 @@ class DashBoard extends StatelessWidget {
             indicatorWeight: 5,
             tabs: [
               Tab(
-                text: 'Trang chủ',
                 icon: Icon(Icons.home),
               ),
               Tab(
-                text: 'Câu hỏi đã lưu',
-                icon: Icon(Icons.save),
+                icon: Icon(Icons.favorite_sharp),
               ),
               Tab(
-                text: 'Tài khoản',
+                icon: Icon(Icons.list_alt_sharp),
+              ),
+              Tab(
                 icon: Icon(Icons.account_box),
               )
             ]));

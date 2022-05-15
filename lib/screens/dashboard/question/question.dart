@@ -3,8 +3,15 @@ import 'package:smarter/models/question/question_response.dart';
 import 'package:smarter/services/question_service.dart';
 
 class Question extends StatefulWidget {
-  final Future<QuestionResponse> Function() getNextQuestion;
-  const Question({Key? key, required this.getNextQuestion})
+  final Future<QuestionResponse> Function()? getNextQuestion;
+  final Future<QuestionResponse> Function(int, bool)?
+      getNextQuestionInGroupOrFavoriteList;
+  final int? currentQuestionId;
+  const Question(
+      {Key? key,
+      this.getNextQuestion,
+      this.getNextQuestionInGroupOrFavoriteList,
+      this.currentQuestionId})
       : super(key: key);
 
   @override
@@ -20,11 +27,18 @@ class _QuestionState extends State<Question> {
   int _numberOfRebuildAttempts = 0;
   QuestionResponse? _response;
   Future<QuestionResponse>? _getNextQuestion;
+  int? _currentQuestionId;
 
   @override
   Widget build(BuildContext context) {
     if (_wasInit == false) {
-      _getNextQuestion = widget.getNextQuestion();
+      if (widget.getNextQuestion != null) {
+        _getNextQuestion = widget.getNextQuestion!();
+      } else {
+        _getNextQuestion = widget.getNextQuestionInGroupOrFavoriteList!(
+            widget.currentQuestionId!, true);
+        _currentQuestionId = widget.currentQuestionId!;
+      }
       _wasInit = true;
     }
 
@@ -67,13 +81,13 @@ class _QuestionState extends State<Question> {
               height: 180,
               padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
               decoration: BoxDecoration(
-                  image: question.imageUrl != ""
-                      ? DecorationImage(
-                          image: NetworkImage(question.imageUrl!),
-                          fit: BoxFit.cover)
-                      : const DecorationImage(
+                  image: question.imageUrl == ""
+                      ? const DecorationImage(
                           image: AssetImage(
-                              'assets/question/default_question_image.png')))),
+                              'assets/question/default_question_image.png'))
+                      : DecorationImage(
+                          image: NetworkImage(question.imageUrl!),
+                          fit: BoxFit.cover))),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: Text(
@@ -167,7 +181,8 @@ class _QuestionState extends State<Question> {
     );
   }
 
-  Color _getColor(QuestionResponse question, String answerCode, String chosenAnswer) {
+  Color _getColor(
+      QuestionResponse question, String answerCode, String chosenAnswer) {
     if (question.correctAnswer.substring(7) == answerCode) {
       return Colors.green;
     }
@@ -191,9 +206,16 @@ class _QuestionState extends State<Question> {
   }
 
   Future<void> getNextQuestion() async {
-    final response = await widget.getNextQuestion();
+    QuestionResponse response;
+    if (widget.getNextQuestion != null) {
+      response = await widget.getNextQuestion!();
+    } else {
+      response = await widget.getNextQuestionInGroupOrFavoriteList!(
+          _currentQuestionId!, false);
+    }
     setState(() {
       _response = response;
+      _currentQuestionId = response.id;
     });
   }
 }
