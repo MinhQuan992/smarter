@@ -88,7 +88,12 @@ class _SignInFormState extends State<SignInForm> {
               onPressed: () {
                 _authenticate();
               },
-              style: ElevatedButton.styleFrom(fixedSize: const Size(330, 50)),
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  fixedSize:
+                      MaterialStateProperty.all<Size>(const Size(330, 50))),
               child: const Text(
                 "Đăng nhập",
                 style: TextStyle(

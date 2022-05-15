@@ -52,57 +52,41 @@ class _HomeTabState extends State<HomeTab> {
             return Column(
               children: <Widget>[
                 Container(
+                  height: 200,
                   width: double.infinity,
                   padding: const EdgeInsets.only(top: 30),
                   decoration: const BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('assets/background/background.png'),
+                          image: AssetImage('assets/background/background.jpg'),
                           fit: BoxFit.cover)),
-                  child: Column(children: <Widget>[
-                    // TODO: check the avatar
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.red,
-                      child: Text(
-                        _getTheFirstLetterOfName(user!.name),
-                        style:
-                            const TextStyle(fontSize: 40, color: Colors.white),
-                      ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Question(
+                                    getNextQuestion:
+                                        _questionService.getRandomQuestion,
+                                  )));
+                    },
+                    style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20))),
+                        fixedSize: MaterialStateProperty.all<Size>(
+                            const Size(380, 50))),
+                    child: const Text(
+                      'Chơi ngẫu nhiên',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Text(
-                        user.name,
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 13),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Question(
-                                        getNextQuestion:
-                                            _questionService.getRandomQuestion,
-                                      )));
-                        },
-                        style: ElevatedButton.styleFrom(
-                            fixedSize: const Size(300, 50)),
-                        child: const Text(
-                          'Chơi ngẫu nhiên',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ]),
+                  ),
                 ),
                 Expanded(
                   child: GridView.count(
@@ -113,12 +97,12 @@ class _HomeTabState extends State<HomeTab> {
                     padding: const EdgeInsets.all(10),
                     shrinkWrap: true,
                     children: <Widget>[
-                      QuestionGroup(_groupNames[0], _imageNames[0]),
-                      QuestionGroup(_groupNames[1], _imageNames[1]),
-                      QuestionGroup(_groupNames[2], _imageNames[2]),
-                      QuestionGroup(_groupNames[3], _imageNames[3]),
-                      QuestionGroup(_groupNames[4], _imageNames[4]),
-                      QuestionGroup(_groupNames[5], _imageNames[5]),
+                      QuestionGroup(_groupNames[0], _imageNames[0], 1),
+                      QuestionGroup(_groupNames[1], _imageNames[1], 2),
+                      QuestionGroup(_groupNames[2], _imageNames[2], 3),
+                      QuestionGroup(_groupNames[3], _imageNames[3], 4),
+                      QuestionGroup(_groupNames[4], _imageNames[4], 5),
+                      QuestionGroup(_groupNames[5], _imageNames[5], 6),
                     ],
                   ),
                 ),

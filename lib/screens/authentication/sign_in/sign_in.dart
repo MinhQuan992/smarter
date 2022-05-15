@@ -29,23 +29,22 @@ class SignIn extends StatelessWidget {
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(133, 0, 0, 0),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const SignUp()));
-                            },
-                            child: const Text(
-                              "Đăng ký",
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ))
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SignUp()));
+                        },
+                        child: Text(
+                          "Đăng ký",
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      )
                     ],
                   )
                 ],

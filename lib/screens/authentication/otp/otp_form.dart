@@ -168,7 +168,12 @@ class _OtpFormState extends State<OtpForm> {
                 onPressed: () {
                   _addUser();
                 },
-                style: ElevatedButton.styleFrom(fixedSize: const Size(330, 50)),
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20))),
+                    fixedSize:
+                        MaterialStateProperty.all<Size>(const Size(330, 50))),
                 child: const Text(
                   "Tiếp tục",
                   style: TextStyle(
