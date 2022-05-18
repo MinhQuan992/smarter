@@ -15,6 +15,19 @@ class QuestionList extends StatefulWidget {
 
 class _QuestionListState extends State<QuestionList> {
   final UserQuestionService _userQuestionService = const UserQuestionService();
+  Future<dynamic>? _futureUserQuestionResponse;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.groupId == null) {
+      _futureUserQuestionResponse =
+          _userQuestionService.getFavoriteQuestionsForUser();
+    } else {
+      _futureUserQuestionResponse =
+          _userQuestionService.getQuestionsByGroupForUser(widget.groupId!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +37,7 @@ class _QuestionListState extends State<QuestionList> {
         ),
         backgroundColor: Colors.grey.shade400,
         body: FutureBuilder<dynamic>(
-          future: widget.groupId == null
-              ? _userQuestionService.getFavoriteQuestionsForUser()
-              : _userQuestionService
-                  .getQuestionsByGroupForUser(widget.groupId!),
+          future: _futureUserQuestionResponse,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -38,15 +48,32 @@ class _QuestionListState extends State<QuestionList> {
               );
             }
             List<UserQuestionResponse> data = snapshot.data;
-            return ListView.builder(
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return QuestionCard(
-                    userQuestionResponse: data[index],
-                    fromFavoriteList: widget.groupId == null,
-                  );
-                });
+            return RefreshIndicator(
+              onRefresh: _pullRefresh,
+              child: ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return QuestionCard(
+                      userQuestionResponse: data[index],
+                      fromFavoriteList: widget.groupId == null,
+                    );
+                  }),
+            );
           },
         ));
+  }
+
+  Future<void> _pullRefresh() async {
+    dynamic freshFutureList;
+    if (widget.groupId == null) {
+      freshFutureList =
+          await _userQuestionService.getFavoriteQuestionsForUser();
+    } else {
+      freshFutureList = await _userQuestionService
+          .getQuestionsByGroupForUser(widget.groupId!);
+    }
+    setState(() {
+      _futureUserQuestionResponse = Future.value(freshFutureList);
+    });
   }
 }

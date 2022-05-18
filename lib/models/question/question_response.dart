@@ -10,6 +10,7 @@ class QuestionResponse {
   final String information;
   final String reference;
   final int groupId;
+  final bool favorite;
 
   const QuestionResponse(
       {required this.id,
@@ -22,7 +23,8 @@ class QuestionResponse {
       this.imageUrl,
       required this.information,
       required this.reference,
-      required this.groupId});
+      required this.groupId,
+      required this.favorite});
 
   factory QuestionResponse.fromJson(Map<String, dynamic> json) {
     return QuestionResponse(
@@ -36,6 +38,7 @@ class QuestionResponse {
         imageUrl: json["imageUrl"],
         information: json["information"],
         reference: json["reference"],
-        groupId: json["groupId"]);
+        groupId: json["groupId"],
+        favorite: json["favorite"]);
   }
 }

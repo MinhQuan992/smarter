@@ -93,7 +93,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 style: ButtonStyle(
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20))),
+                            borderRadius: BorderRadius.circular(50))),
                     fixedSize:
                         MaterialStateProperty.all<Size>(const Size(330, 50))),
                 child: const Text(
