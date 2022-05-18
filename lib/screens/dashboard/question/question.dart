@@ -7,11 +7,13 @@ class Question extends StatefulWidget {
   final Future<QuestionResponse> Function(int, bool)?
       getNextQuestionInGroupOrFavoriteList;
   final int? currentQuestionId;
+  final bool? isFavorite;
   const Question(
       {Key? key,
       this.getNextQuestion,
       this.getNextQuestionInGroupOrFavoriteList,
-      this.currentQuestionId})
+      this.currentQuestionId,
+      this.isFavorite})
       : super(key: key);
 
   @override
@@ -24,10 +26,10 @@ class _QuestionState extends State<Question> {
   bool _wasInit = false;
   bool _hasAnswered = false;
   String _chosenAnswer = "";
-  int _numberOfRebuildAttempts = 0;
   QuestionResponse? _response;
   Future<QuestionResponse>? _getNextQuestion;
   int? _currentQuestionId;
+  bool? _isFavorite;
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +41,14 @@ class _QuestionState extends State<Question> {
             widget.currentQuestionId!, true);
         _currentQuestionId = widget.currentQuestionId!;
       }
+      if (widget.isFavorite != null) {
+        _isFavorite = widget.isFavorite!;
+      }
       _wasInit = true;
     }
 
     return Scaffold(
+      backgroundColor: Colors.blue.shade300,
       body: FutureBuilder<QuestionResponse>(
         future: _getNextQuestion,
         builder: (context, snapshot) => !snapshot.hasData
@@ -51,13 +57,37 @@ class _QuestionState extends State<Question> {
               )
             : Builder(builder: (context) {
                 final question = _response ?? snapshot.data;
+                _currentQuestionId = question!.id;
+                _isFavorite ??= question.favorite;
                 return Column(
                   children: [
+                    Container(
+                      padding:
+                          const EdgeInsets.only(left: 20, top: 30, bottom: 10),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: SizedBox.fromSize(
+                          size: const Size(30, 30),
+                          child: ClipOval(
+                            child: Material(
+                              color: Colors.white,
+                              child: InkWell(
+                                splashColor: Colors.green,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Icon(Icons.close_sharp),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            _buildQuestion(question!),
+                            _buildQuestion(question),
                             if (_hasAnswered) _buildInfo(question),
                           ],
                         ),
@@ -72,31 +102,33 @@ class _QuestionState extends State<Question> {
   }
 
   Widget _buildQuestion(QuestionResponse question) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 24),
+    return SizedBox(
       width: 380,
       child: Column(
         children: [
-          Container(
-              height: 180,
-              padding: const EdgeInsets.fromLTRB(0, 30, 0, 10),
-              decoration: BoxDecoration(
-                  image: question.imageUrl == ""
-                      ? const DecorationImage(
-                          image: AssetImage(
-                              'assets/question/default_question_image.png'))
-                      : DecorationImage(
-                          image: NetworkImage(question.imageUrl!),
-                          fit: BoxFit.cover))),
+          if (question.imageUrl == "")
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                'assets/question/default_question_image.png',
+              ),
+            )
+          else
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                question.imageUrl!,
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: Text(
               question.content,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24),
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500),
             ),
           ),
           Column(
@@ -126,13 +158,18 @@ class _QuestionState extends State<Question> {
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
           width: 380,
           decoration: BoxDecoration(
-              color: _hasAnswered
-                  ? _getColor(question, answerCode, _chosenAnswer)
-                  : Colors.grey.shade400,
-              borderRadius: BorderRadius.circular(10)),
+            color: _hasAnswered
+                ? _getColor(question, answerCode, _chosenAnswer)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: Colors.black, width: 1),
+          ),
           child: Text(
             _getAnswerContent(question, answerCode),
-            style: const TextStyle(color: Colors.black, fontSize: 18),
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.normal),
           )),
     );
   }
@@ -149,34 +186,68 @@ class _QuestionState extends State<Question> {
   Widget _buildButtons() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Row(children: [
-        ElevatedButton.icon(
-          icon: const Icon(Icons.home),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          style: ElevatedButton.styleFrom(
-              fixedSize: const Size(100, 40), primary: Colors.green),
-          label: const Text(
-            "Trang chủ",
-            style: TextStyle(color: Colors.white, fontSize: 14),
-            textAlign: TextAlign.center,
-          ),
-        ),
         const Spacer(),
-        ElevatedButton.icon(
-          icon: const Icon(Icons.arrow_right_sharp),
-          onPressed: () async {
-            _numberOfRebuildAttempts += 1;
+        if (_hasAnswered)
+          InkWell(
+            onTap: () async {
+              await _questionService.setFavorite(
+                  _currentQuestionId!, !_isFavorite!);
+              setState(() {
+                _isFavorite = !_isFavorite!;
+              });
+            },
+            child: SizedBox(
+                width: 80,
+                height: 50,
+                child: _isFavorite!
+                    ? const Icon(
+                        Icons.favorite_sharp,
+                        color: Colors.red,
+                        size: 35,
+                      )
+                    : const Icon(
+                        Icons.favorite_border_sharp,
+                        color: Colors.red,
+                        size: 35,
+                      )),
+          ),
+        InkWell(
+          onTap: () async {
             _hasAnswered = false;
             await getNextQuestion();
           },
-          style: ElevatedButton.styleFrom(fixedSize: const Size(100, 40)),
-          label: const Text("Tiếp theo",
-              style: TextStyle(color: Colors.white, fontSize: 14),
-              textAlign: TextAlign.center),
-        )
+          child: Container(
+            width: 80,
+            height: 50,
+            decoration: BoxDecoration(color: Colors.blue.shade300),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                    color: Colors.white,
+                    size: 50,
+                  ),
+                ),
+                const Expanded(
+                  child: Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                    color: Colors.white,
+                    size: 50,
+                  ),
+                ),
+                Expanded(
+                  child: Icon(
+                    Icons.keyboard_arrow_right_outlined,
+                    color: Colors.blue.shade300,
+                    size: 50,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ]),
     );
   }
@@ -184,12 +255,12 @@ class _QuestionState extends State<Question> {
   Color _getColor(
       QuestionResponse question, String answerCode, String chosenAnswer) {
     if (question.correctAnswer.substring(7) == answerCode) {
-      return Colors.green;
+      return Color.fromARGB(255, 75, 210, 80);
     }
     if (chosenAnswer == answerCode) {
       return Colors.red;
     }
-    return Colors.grey.shade400;
+    return Colors.white;
   }
 
   String _getAnswerContent(QuestionResponse question, String answerCode) {
@@ -216,6 +287,7 @@ class _QuestionState extends State<Question> {
     setState(() {
       _response = response;
       _currentQuestionId = response.id;
+      _isFavorite = response.favorite;
     });
   }
 }

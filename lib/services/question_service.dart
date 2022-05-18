@@ -56,4 +56,16 @@ class QuestionService {
     return CheckAnswerResponse.fromJson(
         jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
   }
+
+  Future<bool> setFavorite(int questionId, bool isFavorite) async {
+    String? token = await _flutterSecureStorage.read(key: "token");
+    await http.put(
+        Uri.parse("${constants.baseUrl}/questions/set-favorite/$questionId"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: json.encode({"favorite": isFavorite}));
+    return true;
+  }
 }

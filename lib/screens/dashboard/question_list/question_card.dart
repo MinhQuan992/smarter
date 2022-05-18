@@ -33,6 +33,7 @@ class _QuestionCardState extends State<QuestionCard> {
                               ? _questionService.getNextFavoriteQuestion
                               : _questionService.getNextQuestionInGroup,
                       currentQuestionId: widget.userQuestionResponse.questionId,
+                      isFavorite: widget.userQuestionResponse.favorite,
                     )));
       },
       child: Container(
