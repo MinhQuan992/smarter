@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smarter/screens/dashboard/home/home_tab.dart';
+import 'package:smarter/screens/dashboard/my_question/my_question_list.dart';
 import 'package:smarter/screens/dashboard/question_list/question_list.dart';
 
 class DashBoard extends StatelessWidget {
@@ -15,7 +16,7 @@ class DashBoard extends StatelessWidget {
             body: const TabBarView(children: [
               HomeTab(),
               QuestionList(title: "Câu hỏi yêu thích"),
-              Icon(Icons.list_alt_sharp),
+              MyQuestionList(),
               Icon(Icons.account_box)
             ]),
           )),

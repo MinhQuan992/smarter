@@ -43,6 +43,17 @@ class QuestionService {
         jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
   }
 
+  Future<QuestionResponse> getNextUserQuestion(
+      int currentQuestionId, bool getCurrent) async {
+    String? token = await _flutterSecureStorage.read(key: "token");
+    final response = await http.get(
+        Uri.parse(
+            "${constants.baseUrl}/questions/user-questions/next-user-question?currentQuestionId=$currentQuestionId&getCurrent=$getCurrent"),
+        headers: {"Authorization": "Bearer $token"});
+    return QuestionResponse.fromJson(
+        jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
+  }
+
   Future<CheckAnswerResponse> checkAnswer(
       int questionId, String answerCode) async {
     String? token = await _flutterSecureStorage.read(key: "token");

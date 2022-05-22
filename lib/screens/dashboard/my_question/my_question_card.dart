@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:smarter/models/user_question/user_question_response.dart';
+import 'package:smarter/screens/dashboard/my_question/add_question.dart';
 import 'package:smarter/screens/dashboard/question/question.dart';
 import 'package:smarter/services/question_service.dart';
 
-class QuestionCard extends StatefulWidget {
+class MyQuestionCard extends StatefulWidget {
   final UserQuestionResponse userQuestionResponse;
-  final bool fromFavoriteList;
-  const QuestionCard(
-      {required this.userQuestionResponse,
-      required this.fromFavoriteList,
-      Key? key})
+  const MyQuestionCard({required this.userQuestionResponse, Key? key})
       : super(key: key);
 
   @override
-  State<QuestionCard> createState() => _QuestionCardState();
+  State<MyQuestionCard> createState() => _MyQuestionCardState();
 }
 
-class _QuestionCardState extends State<QuestionCard> {
+class _MyQuestionCardState extends State<MyQuestionCard> {
   final QuestionService _questionService = const QuestionService();
 
   @override
@@ -28,11 +25,9 @@ class _QuestionCardState extends State<QuestionCard> {
             context,
             MaterialPageRoute(
                 builder: (context) => Question(
-                      getNextQuestionInList: widget.fromFavoriteList
-                          ? _questionService.getNextFavoriteQuestion
-                          : _questionService.getNextQuestionInGroup,
+                      getNextQuestionInList:
+                          _questionService.getNextUserQuestion,
                       currentQuestionId: widget.userQuestionResponse.questionId,
-                      isFavorite: widget.userQuestionResponse.favorite,
                     )));
       },
       child: Container(
@@ -62,10 +57,16 @@ class _QuestionCardState extends State<QuestionCard> {
                 child: Text(question.shortContent,
                     style: const TextStyle(fontSize: 18))),
             const Spacer(),
-            const Icon(
-              Icons.keyboard_arrow_right_sharp,
-              color: Colors.blue,
-              size: 30,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AddQuestion()));
+              },
+              child: const Icon(
+                Icons.edit,
+                color: Colors.blue,
+                size: 22,
+              ),
             )
           ],
         ),

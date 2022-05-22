@@ -2,17 +2,17 @@ class UserQuestionResponse {
   final int questionId;
   final String shortContent;
   final String? imageUrl;
-  final bool answered;
-  final bool favorite;
-  final bool answerCorrect;
+  final bool? answered;
+  final bool? favorite;
+  final bool? answerCorrect;
 
   const UserQuestionResponse(
       {required this.questionId,
       required this.shortContent,
       this.imageUrl,
-      required this.answered,
-      required this.favorite,
-      required this.answerCorrect});
+      this.answered,
+      this.favorite,
+      this.answerCorrect});
 
   factory UserQuestionResponse.fromJson(Map<String, dynamic> json) {
     return UserQuestionResponse(
