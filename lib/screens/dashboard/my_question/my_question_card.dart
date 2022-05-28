@@ -1,38 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:smarter/models/question/question_response.dart';
 import 'package:smarter/models/user_question/user_question_response.dart';
+import 'package:smarter/screens/dashboard/my_question/add_question.dart';
 import 'package:smarter/screens/dashboard/question/question.dart';
 import 'package:smarter/services/question_service.dart';
 
-class QuestionCard extends StatefulWidget {
+class MyQuestionCard extends StatefulWidget {
   final UserQuestionResponse userQuestionResponse;
-  final bool fromFavoriteList;
-  const QuestionCard(
-      {required this.userQuestionResponse,
-      required this.fromFavoriteList,
-      Key? key})
+  const MyQuestionCard({required this.userQuestionResponse, Key? key})
       : super(key: key);
 
   @override
-  State<QuestionCard> createState() => _QuestionCardState();
+  State<MyQuestionCard> createState() => _MyQuestionCardState();
 }
 
-class _QuestionCardState extends State<QuestionCard> {
+class _MyQuestionCardState extends State<MyQuestionCard> {
   final QuestionService _questionService = const QuestionService();
 
   @override
   Widget build(BuildContext context) {
     UserQuestionResponse question = widget.userQuestionResponse;
     return InkWell(
+      onLongPress: () {
+        _showDeleteDialog(widget.userQuestionResponse.questionId);
+      },
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => Question(
-                      getNextQuestionInList: widget.fromFavoriteList
-                          ? _questionService.getNextFavoriteQuestion
-                          : _questionService.getNextQuestionInGroup,
+                      getNextQuestionInList:
+                          _questionService.getNextUserQuestion,
                       currentQuestionId: widget.userQuestionResponse.questionId,
-                      isFavorite: widget.userQuestionResponse.favorite,
                     )));
       },
       child: Container(
@@ -62,14 +61,49 @@ class _QuestionCardState extends State<QuestionCard> {
                 child: Text(question.shortContent,
                     style: const TextStyle(fontSize: 18))),
             const Spacer(),
-            const Icon(
-              Icons.keyboard_arrow_right_sharp,
-              color: Colors.blue,
-              size: 30,
+            GestureDetector(
+              onTap: () async {
+                QuestionResponse question =
+                    await _questionService.getNextUserQuestion(
+                        widget.userQuestionResponse.questionId, true);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddQuestion(question: question)));
+              },
+              child: const Icon(
+                Icons.edit,
+                color: Colors.blue,
+                size: 22,
+              ),
             )
           ],
         ),
       ),
     );
+  }
+
+  void _showDeleteDialog(int id) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Xóa câu hỏi"),
+            content: const Text("Bạn xác nhận muốn xóa câu hỏi này?"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Hủy")),
+              TextButton(
+                  onPressed: () async {
+                    await _questionService.deleteUserQuestion(id);
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Xác nhận"))
+            ],
+          );
+        });
   }
 }

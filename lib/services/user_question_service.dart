@@ -38,4 +38,19 @@ class UserQuestionService {
     }
     return false;
   }
+
+  Future<dynamic> getUserQuestionsForUser() async {
+    String? token = await _flutterSecureStorage.read(key: "token");
+    final response = await http.get(
+        Uri.parse("${constants.baseUrl}/questions/user-questions"),
+        headers: {"Authorization": "Bearer $token"});
+    if (response.statusCode == 200) {
+      List jsonResponse =
+          jsonDecode(const Utf8Decoder().convert(response.bodyBytes));
+      return jsonResponse
+          .map((userQuestion) => UserQuestionResponse.fromJson(userQuestion))
+          .toList();
+    }
+    return false;
+  }
 }

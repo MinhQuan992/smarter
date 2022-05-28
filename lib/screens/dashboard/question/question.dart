@@ -4,14 +4,13 @@ import 'package:smarter/services/question_service.dart';
 
 class Question extends StatefulWidget {
   final Future<QuestionResponse> Function()? getNextQuestion;
-  final Future<QuestionResponse> Function(int, bool)?
-      getNextQuestionInGroupOrFavoriteList;
+  final Future<QuestionResponse> Function(int, bool)? getNextQuestionInList;
   final int? currentQuestionId;
   final bool? isFavorite;
   const Question(
       {Key? key,
       this.getNextQuestion,
-      this.getNextQuestionInGroupOrFavoriteList,
+      this.getNextQuestionInList,
       this.currentQuestionId,
       this.isFavorite})
       : super(key: key);
@@ -37,8 +36,8 @@ class _QuestionState extends State<Question> {
       if (widget.getNextQuestion != null) {
         _getNextQuestion = widget.getNextQuestion!();
       } else {
-        _getNextQuestion = widget.getNextQuestionInGroupOrFavoriteList!(
-            widget.currentQuestionId!, true);
+        _getNextQuestion =
+            widget.getNextQuestionInList!(widget.currentQuestionId!, true);
         _currentQuestionId = widget.currentQuestionId!;
       }
       if (widget.isFavorite != null) {
@@ -58,7 +57,9 @@ class _QuestionState extends State<Question> {
             : Builder(builder: (context) {
                 final question = _response ?? snapshot.data;
                 _currentQuestionId = question!.id;
-                _isFavorite ??= question.favorite;
+                if (_isFavorite == null && question.favorite != null) {
+                  _isFavorite = question.favorite;
+                }
                 return Column(
                   children: [
                     Container(
@@ -88,7 +89,8 @@ class _QuestionState extends State<Question> {
                         child: Column(
                           children: [
                             _buildQuestion(question),
-                            if (_hasAnswered) _buildInfo(question),
+                            if (_hasAnswered && question.information != null)
+                              _buildInfo(question),
                           ],
                         ),
                       ),
@@ -178,7 +180,7 @@ class _QuestionState extends State<Question> {
     return SizedBox(
         width: 380,
         child: Text(
-          question.information,
+          question.information!,
           style: const TextStyle(color: Colors.black, fontSize: 18),
         ));
   }
@@ -188,7 +190,7 @@ class _QuestionState extends State<Question> {
       margin: const EdgeInsets.only(top: 10),
       child: Row(children: [
         const Spacer(),
-        if (_hasAnswered)
+        if (_hasAnswered && _isFavorite != null)
           InkWell(
             onTap: () async {
               await _questionService.setFavorite(
@@ -281,13 +283,15 @@ class _QuestionState extends State<Question> {
     if (widget.getNextQuestion != null) {
       response = await widget.getNextQuestion!();
     } else {
-      response = await widget.getNextQuestionInGroupOrFavoriteList!(
-          _currentQuestionId!, false);
+      response =
+          await widget.getNextQuestionInList!(_currentQuestionId!, false);
     }
     setState(() {
       _response = response;
       _currentQuestionId = response.id;
-      _isFavorite = response.favorite;
+      if (response.favorite != null) {
+        _isFavorite = response.favorite;
+      }
     });
   }
 }
