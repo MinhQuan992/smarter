@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "425045498413",
+    "project_id": "smarter-fb",
+    "storage_bucket": "smarter-fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:425045498413:android:815d4674472043bd67f6a4",
+        "android_client_info": {
+          "package_name": "com.example.smarter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "425045498413-3cmpm0366f100ekdm72ecv3m6vv0r2p2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnFl3eH0Q4AzAeF7Sa_GLaC-1yuh1kEdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "425045498413-3cmpm0366f100ekdm72ecv3m6vv0r2p2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

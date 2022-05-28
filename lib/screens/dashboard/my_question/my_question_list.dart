@@ -31,8 +31,8 @@ class _MyQuestionListState extends State<MyQuestionList> {
       backgroundColor: Colors.grey.shade400,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AddQuestion()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddQuestion()));
         },
         child: const Icon(Icons.add),
       ),

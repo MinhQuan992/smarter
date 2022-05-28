@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smarter/models/question/question_response.dart';
 import 'package:smarter/models/user_question/user_question_response.dart';
 import 'package:smarter/screens/dashboard/my_question/add_question.dart';
 import 'package:smarter/screens/dashboard/question/question.dart';
@@ -20,6 +21,9 @@ class _MyQuestionCardState extends State<MyQuestionCard> {
   Widget build(BuildContext context) {
     UserQuestionResponse question = widget.userQuestionResponse;
     return InkWell(
+      onLongPress: () {
+        _showDeleteDialog(widget.userQuestionResponse.questionId);
+      },
       onTap: () {
         Navigator.push(
             context,
@@ -58,9 +62,14 @@ class _MyQuestionCardState extends State<MyQuestionCard> {
                     style: const TextStyle(fontSize: 18))),
             const Spacer(),
             GestureDetector(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddQuestion()));
+              onTap: () async {
+                QuestionResponse question =
+                    await _questionService.getNextUserQuestion(
+                        widget.userQuestionResponse.questionId, true);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddQuestion(question: question)));
               },
               child: const Icon(
                 Icons.edit,
@@ -72,5 +81,29 @@ class _MyQuestionCardState extends State<MyQuestionCard> {
         ),
       ),
     );
+  }
+
+  void _showDeleteDialog(int id) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Xóa câu hỏi"),
+            content: const Text("Bạn xác nhận muốn xóa câu hỏi này?"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Hủy")),
+              TextButton(
+                  onPressed: () async {
+                    await _questionService.deleteUserQuestion(id);
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Xác nhận"))
+            ],
+          );
+        });
   }
 }
