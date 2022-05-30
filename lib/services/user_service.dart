@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:smarter/models/exception.dart';
+import 'package:smarter/models/user/change_profile_request.dart';
 import 'package:smarter/models/user/user_response.dart';
 import 'package:smarter/models/user/add_user_request.dart';
 import 'package:smarter/models/user/verify_info_request.dart';
@@ -45,6 +46,23 @@ class UserService {
         Uri.parse("${constants.baseUrl}/users/current-user"),
         headers: {"Authorization": "Bearer $token"});
     return UserResponse.fromJson(
+        jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
+  }
+
+  Future<dynamic> changeProfile(ChangeProfileRequest request) async {
+    String? token = await _flutterSecureStorage.read(key: "token");
+    final response = await http.put(
+        Uri.parse("${constants.baseUrl}/users/change-profile"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: json.encode(request));
+    if (response.statusCode == 200) {
+      return UserResponse.fromJson(
+          jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
+    }
+    return Exception.fromJson(
         jsonDecode(const Utf8Decoder().convert(response.bodyBytes)));
   }
 }
