@@ -96,7 +96,7 @@ class _ProfileState extends State<Profile> {
                                   _avtUrl = newUrl;
                                 });
                               },
-                              child: _avtUrl != null
+                              child: _avtUrl != null && _avtUrl != ""
                                   ? CircleAvatar(
                                       radius: 60,
                                       backgroundImage: NetworkImage(_avtUrl!),
@@ -356,13 +356,7 @@ class _ProfileState extends State<Profile> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.pushReplacement<void, void>(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) =>
-                                    const SignIn(),
-                              ),
-                            );
+                            _showConfirmationDialog();
                           },
                           style: ButtonStyle(
                               shape: MaterialStateProperty.all<
@@ -428,5 +422,33 @@ class _ProfileState extends State<Profile> {
               {_toastBuilder.build("Cập nhật thông tin thành công")}
           });
     }
+  }
+
+  void _showConfirmationDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Đăng xuất"),
+            content: const Text("Bạn chắc chắn muốn đăng xuất?"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Hủy")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement<void, void>(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) => const SignIn(),
+                      ),
+                    );
+                  },
+                  child: const Text("Xác nhận"))
+            ],
+          );
+        });
   }
 }
